@@ -1,0 +1,2 @@
+\form#0:\[ 1-e^{{\frac{x}{scale}}^{shape}} \]
+\form#1:\[ \frac{shape}{scale} \left(\frac{x}{scale} \cdot e^{-{\left(\frac{x}{scale}\right)}^{shape}}\right)\]

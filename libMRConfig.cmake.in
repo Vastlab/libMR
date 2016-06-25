@@ -1,0 +1,21 @@
+# - Config file for the libMR package
+# It defines the following variables
+#  LIBMR_INCLUDE_DIRS - include directories for libMR
+#  LIBMR_LIBRARIES    - libraries to link against
+#  LIBMR_EXECUTABLE   - the bar executable
+
+# Compute paths
+get_filename_component(LIBMR_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+if(EXISTS "${LIBMR_CMAKE_DIR}/CMakeCache.txt")
+   # In build tree
+   include("${LIBMR_CMAKE_DIR}/libMRBuildTreeSettings.cmake")
+else()
+   set(LIBMR_INCLUDE_DIRS "${LIBMR_CMAKE_DIR}/@CONF_REL_INCLUDE_DIR@")
+endif()
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+include("${LIBMR_CMAKE_DIR}/libMRLibraryDepends.cmake")
+
+# These are IMPORTED targets created by libMRLibraryDepends.cmake
+set(LIBMR_LIBRARIES libmr)
+set(LIBMR_EXECUTABLE examples)
