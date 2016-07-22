@@ -1,5 +1,16 @@
+## Synopsis
+
+
 libMR provides core MetaRecognition and  Weibull fitting functionality.
-It is used to calculate w-scores used for multi-modal fusion.
+It is used to calculate w-scores used for multi-modal fusion, renormalize SVM data and in general support open-set algorithms with outlier detection
+
+
+## Motivation
+
+Determine when something is an outlier is tricky business.  Luckily extreme value theory provides a strong basis for modeling of the largest or smallest known values and then determing if something else is too large or too small. This library supports such computations.  Its also easy to do the work in almost any advanced package (R, Matlab, etc) but it is trick to keep it all straight. the C++ classes here track translation and flipping to make it easier to correctly use the meta-recognition concepts
+
+
+## License
 
 This version libMR is released under the BSD 3-Clause license. (see License.txt) and superseed previous license.  We dropped pursing the patent protection. 
 
@@ -17,6 +28,14 @@ year = {2011}
 }    
 
 or one of our later works if combining it with them.  
+
+
+
+
+## Installation
+
+Provide code examples and explanations of how to get the project.
+
 
 
 ************************************************************************************************************************
@@ -98,3 +117,15 @@ There are several ways to install LibMR for Python:
       >>> mr = libmr.MR()
 
    Now, move libmr.so into your project's folder.
+
+
+## Tests
+
+
+There are built in tests  in examples/mr-test to ensure it compiled correctly and is computing proper values
+
+## Contributors
+
+Developed by Dr. Terrance (Terry Boult),  Dr. Walter Scheir   with some implemntation by Vijay Iyer @Securics
+
+
