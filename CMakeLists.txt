@@ -33,10 +33,10 @@ include_directories(
   "${PROJECT_SOURCE_DIR}"   # to find libmr/libmr.h
   "${PROJECT_BINARY_DIR}")  # to find bin/config.h
 
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+#IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
    # Mac OS X specific code
-   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic -I /usr/include/sys")
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
+#   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic -I /usr/include/sys")
+#ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
 
 
 include(UseDoxygen OPTIONAL)

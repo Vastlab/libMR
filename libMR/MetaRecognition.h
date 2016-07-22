@@ -69,7 +69,7 @@ public:
                    int fitting_size=9,     //!< tail size for fitting.  With small data the defaults are fine.. if you have millions make it larger for better predictions 
                    bool verbose = false,    //!< is the code chatty on errors during fitting, useful for debugging
                    double alpha=5.0,        //!< band for confidence interfals
-                   int translate_amount=.1 //!< shifting data to help ensure stability with all positive.. if data is very broad and you want some probabilities for all points you can make it larger.. 
+                   double translate_amount=.1 //!< shifting data to help ensure stability with all positive.. if data is very broad and you want some probabilities for all points you can make it larger.. 
                    );
 
 	~MetaRecognition();
@@ -117,8 +117,8 @@ public:
 	void Load(char* filename);        //!< various I/O functions
         int get_fitting_size();  //!<  Get get_fitting_size (aka tail size)
         int set_fitting_size(int nsize);  //!<  reset object and define new fitting size
-        int get_translate_amount();  //!<  Get get_internal tranlation amount (you probably don't need this, but just in case)
-        int set_translate_amount(int ntrans);  //!<  reset object and define new translate amount.. if you get errors because of negative data, increase this
+        double get_translate_amount();  //!<  Get get_internal tranlation amount (you probably don't need this, but just in case)
+        int set_translate_amount(double ntrans);  //!<  reset object and define new translate amount.. if you get errors because of negative data, increase this
         int get_sign();   //!<  Get get_internal sign variable. (you probably don't need this, but just in case)
         int set_sign(int nsign); //!<  reset object and  set sign  (you probably don't need this, but just in case)
         double get_small_score();   //!<  Get get_internal smaller translation amount (you probably don't need this, but just in case)
@@ -135,7 +135,7 @@ protected:
 	int sign;   //!< sign is postive is larger is better,  negative means orginally smaller was better (we transformed for fitting).
         MR_fitting_type ftype;  //!< type of fitting used for SVM.. default is reject complement
 	int fitting_size;   //!< tail size for fitting in any of the FitXX functions
-	int translate_amount; //!< we transform data so all fittng data data is positive and bigger is better, this predefined constant helps ensure more of the end-user data is non-negative.  
+	double translate_amount; //!< we transform data so all fittng data data is positive and bigger is better, this predefined constant helps ensure more of the end-user data is non-negative.  
 	double small_score;   //!< the smallest score, so all fitting data is consistently postive. part of our transform
 	int scores_to_drop; //!< when fitting for recognition prediction, how many top score are hypothesized to be a match, so we can fit on non-match data.  Only used in for fitting, no impact on transform. 
         bool isvalid; //!< is the parameters in the object valid. private:

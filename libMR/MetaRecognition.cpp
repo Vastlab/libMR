@@ -55,7 +55,7 @@ extern int weibull_fit_verbose_debug;
 #ifdef __cplusplus
 }
 #endif
-MetaRecognition::MetaRecognition(int scores_to_dropx,  int fitting_sizex, bool verb, double alphax, int translate_amountx):
+MetaRecognition::MetaRecognition(int scores_to_dropx,  int fitting_sizex, bool verb, double alphax, double translate_amountx):
   scores_to_drop(scores_to_dropx),verbose(verb),fitting_size(fitting_sizex),alpha(alphax),translate_amount(translate_amountx)
 {
   memset(parmhat,0,sizeof(parmhat));
@@ -172,7 +172,7 @@ int MetaRecognition::ReNormalize(double *invec, double *outvec, int length)
 int MetaRecognition::EvtGeneric(double* inputData, int inputDataSize, int inward, double x)
 {
   if(fitting_size > inputDataSize) {
-    fprintf(stderr:"In MetaRecognition,  warning asked to fit with tail size %d but input data only %d,  returning -1\n",
+    fprintf(stderr,"In MetaRecognition,  warning asked to fit with tail size %d but input data only %d,  returning -1\n",
            fitting_size, -inputDataSize);
   }
 
@@ -387,7 +387,7 @@ void MetaRecognition::Save(FILE *outputFile) const
                   "%21.18g %21.18g " //parmci 
                   "%21.18g %21.18g  "
                   "%d %f %d %d "  //sign, alpha, fitting size
-                  "%d %21.18g %d\n", //translate,  small_score, scores_to_drop
+                  "%lf %21.18g %d\n", //translate,  small_score, scores_to_drop
                   parmhat[0], parmhat[1],
                   parmci[0],parmci[1],
                   parmci[2],parmci[3],
@@ -409,7 +409,7 @@ void MetaRecognition::Load(FILE *inputFile)
                        "%lf %lf " //parmci 
                        "%lf %lf "
                        "%d %lf %d %d "  //sign, alpha, fitting size
-                       "%d %lf %d ", //translate, small_score, scores_to_drop, 
+                       "%lf %lf %d ", //translate, small_score, scores_to_drop, 
                        parmhat, parmhat+1,
                        parmci,parmci+1,
                        parmci+2,parmci+3,
@@ -458,8 +458,8 @@ void MetaRecognition::from_string(std::string input) {
 
 int MetaRecognition::set_fitting_size(int nsize){ isvalid=false; return fitting_size=nsize;}
 int MetaRecognition::get_fitting_size(){ return fitting_size;}
-int MetaRecognition::get_translate_amount(){ return translate_amount;}
-int MetaRecognition::set_translate_amount(int ntrans) {isvalid=false; return translate_amount=ntrans;}
+double MetaRecognition::get_translate_amount(){ return translate_amount;}
+int MetaRecognition::set_translate_amount(double ntrans) {isvalid=false; return translate_amount=ntrans;}
 double MetaRecognition::get_small_score(){return small_score;}
 double MetaRecognition::set_small_score(double nscore){isvalid=false;  return small_score=nscore;}
 int MetaRecognition::get_sign(){return sign;}
