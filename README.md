@@ -126,6 +126,6 @@ There are built in tests  in examples/mr-test to ensure it compiled correctly an
 
 ## Contributors
 
-Developed by Dr. Terrance (Terry Boult),  Dr. Walter Scheir   with some implemntation by Vijay Iyer @Securics
+Developed by Dr. Terrance (Terry) Boult,  Dr. Walter Scheir   with some implemntation by Vijay Iyer @Securics and Enhancements for Python by Ethan Rudd
 
 
