@@ -56,7 +56,7 @@ extern int weibull_fit_verbose_debug;
 }
 #endif
 MetaRecognition::MetaRecognition(int scores_to_dropx,  int fitting_sizex, bool verb, double alphax, int translate_amountx):
-  scores_to_drop(scores_to_dropx),verbose(verb),fitting_size(fitting_sizex),alpha(alphax),translate_amount(translate_amountx)
+  verbose(verb),alpha(alphax),fitting_size(fitting_sizex),translate_amount(translate_amountx),scores_to_drop(scores_to_dropx)
 {
   memset(parmhat,0,sizeof(parmhat));
   memset(parmci,0,sizeof(parmci));
@@ -377,7 +377,6 @@ std::istream& operator>> ( std::istream& is, MetaRecognition& mr )
 void MetaRecognition::Load(std::istream &inputStream)
 {
   isvalid=false;
-  int temp;
   if(inputStream.good())
     {
       int iftype;
@@ -416,8 +415,7 @@ void MetaRecognition::Save(FILE *outputFile) const
 
 void MetaRecognition::Load(FILE *inputFile)
 {
-  int temp, iftype;
-  int retcode=0;
+  int temp, iftype, retcode;
   isvalid=false;
   if((inputFile != NULL) && !feof(inputFile))
     {

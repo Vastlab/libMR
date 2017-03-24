@@ -63,7 +63,7 @@ public:
      Object will exist but is not valid until some fitting fucntion is called
 */
 
-  MetaRecognition( int scores_to_drop=0,   //!< is this object for prediction, if so  how many top scores to drop when fitting
+        MetaRecognition( int scores_to_drop=0,   //!< is this object for prediction, if so  how many top scores to drop when fitting
                    int fitting_size=9,     //!< tail size for fitting.  With small data the defaults are fine.. if you have millions make it larger for better predictions
                    bool verbose = false,    //!< is the code chatty on errors during fitting, useful for debugging
                    double alpha=5.0,        //!< band for confidence interfals
