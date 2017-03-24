@@ -38,6 +38,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+_declspec(dllexport) double weibull_pdf(double x, double scale, double shape);
 _declspec(dllexport) double weibull_inv(double x, double scale, double shape);
 _declspec(dllexport) double weibull_cdf(double x, double scale, double shape);
 _declspec(dllexport) int weibull_fit(double* weibull_parms, double* wparm_confidenceintervals, double* inputData, double alpha, int size);
@@ -57,6 +58,8 @@ extern "C" {
   /*#define WEIBULL_USE_ASSERTS  //!< \def define this to force asserts rather than error codes. */
   /*#define WEIBULL_IGNORE_ERRORS //!< \def defien this to skip printing/return code for errors */
 
+
+  double weibull_pdf(double x, double scale, double shape);
 
   /**  weibull_cdf computes the probability (given our assumptions) that the value x is an outlier ABOVE the fit distribution.  if the distribution was non-match data, then it provides this probability that x is a match score.   If data was match-data then it would be the probability of it being a larger non-match. 
   computes @f[ 1-e^{{\frac{x}{scale}}^{shape}} @f]

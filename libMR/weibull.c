@@ -30,11 +30,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-
-#ifndef __APPLE__
 #include <malloc.h>
-#endif
-
 #include <memory.h>
 #include <float.h>
 
@@ -68,6 +64,29 @@ extern "C" {
 
   
   
+double weibull_pdf(double x, double scale, double shape)
+{
+    double pdf;
+    double tempVal, tempVal1;
+
+    if(x<0) return 0; /* optimize for the simple case that can be common in playing with SVMs.  (a valid value, and can ignore other possible errors) */
+
+#ifndef WEIBULL_IGNORE_ERRORS
+#ifdef WEIBULL_USE_ASSERTS
+    assert(scale>0);
+    assert(shape>0);
+#else
+    if(scale<=0) WEIBULL_ERROR_HANDLER( -1, "Bad scale in weibull_pdf");
+    if(shape <=0) WEIBULL_ERROR_HANDLER(-2, "Bad shape in weibull_pdf"); 
+#endif
+#endif
+
+    tempVal =  x/scale;
+    tempVal1 = pow(tempVal,shape);
+    pdf = (shape/scale) * pow(tempVal,shape-1) * exp(-1*tempVal1);
+
+    return pdf;
+}
 
 
 
@@ -96,8 +115,6 @@ double weibull_cdf(double x, double scale, double shape)
     if(shape <=0) WEIBULL_ERROR_HANDLER(-2, "Bad shape in weibull_cdf"); 
 #endif
 #endif
-
-
 
     tempVal =  x/scale;
     tempVal1 = pow(tempVal,shape);

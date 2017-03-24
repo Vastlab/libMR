@@ -1,5 +1,5 @@
 /**
- * MetaRecognition.h: 
+ * MetaRecognition.h:
 
  * @Author Terry Boult tboult at securics com
  * @Author Vijay Iyer viyer at securics com
@@ -32,11 +32,9 @@
 
 #include "weibull.h"
 
-#define libMRversin 1.1.0
-
 #ifdef _WIN32
 #define DLLEXPORT _declspec(dllexport)
-#else 
+#else
 #define DLLEXPORT
 #endif
 
@@ -51,25 +49,25 @@ struct svm_node_libsvm
 
 /**!
   Class MetaRecognition provides a object-based interface for Meta-Recognition.  The object can be ...
- 
+
   TBD
 
 
 */
-class DLLEXPORT MetaRecognition //!  Primary object/methods for tranforming and computing needed for any Meta recogntion task 
+class DLLEXPORT MetaRecognition //!  Primary object/methods for tranforming and computing needed for any Meta recogntion task
 {
 public:
 
-/**  Ctor,  can call with no arguments (uses default arguments for construciton).  
-     All space is on the stack. 
-     Object will exist but is not valid until some fitting fucntion is called 
+/**  Ctor,  can call with no arguments (uses default arguments for construciton).
+     All space is on the stack.
+     Object will exist but is not valid until some fitting fucntion is called
 */
 
   MetaRecognition( int scores_to_drop=0,   //!< is this object for prediction, if so  how many top scores to drop when fitting
-                   int fitting_size=9,     //!< tail size for fitting.  With small data the defaults are fine.. if you have millions make it larger for better predictions 
+                   int fitting_size=9,     //!< tail size for fitting.  With small data the defaults are fine.. if you have millions make it larger for better predictions
                    bool verbose = false,    //!< is the code chatty on errors during fitting, useful for debugging
                    double alpha=5.0,        //!< band for confidence interfals
-                   double translate_amount=.1 //!< shifting data to help ensure stability with all positive.. if data is very broad and you want some probabilities for all points you can make it larger.. 
+                   int translate_amount=1 //!< shifting data to ensure all is positive.. if data is very broad and you want some probabilities for all points you can make it larger..
                    );
 
 	~MetaRecognition();
@@ -79,31 +77,32 @@ public:
 
         void Reset(); //!< reset to "invalid" state
 
-	bool Predict_Match(double x, double threshold = .9999999);     //!< Is X from the "match" distribution (i.e. we reject null hypothesis of non-match), 
+	bool Predict_Match(double x, double threshold = .9999999);     //!< Is X from the "match" distribution (i.e. we reject null hypothesis of non-match),
 	double W_score(double x); //!< This is the commonly used function.. after fitting, it returns the probability of the given score being "correct".  It is the same as CDF
-	double CDF(double x);     //!< This is the cummumlative probablity of match being corrrect (or more precisely the probility the score (after transform) being an outlier for the distribution, which given the transforms applied, so bigger is better, this is the probablity the score is correct. 
+	double PDF(double x);
+	double CDF(double x);     //!< This is the cummumlative probablity of match being corrrect (or more precisely the probility the score (after transform) being an outlier for the distribution, which given the transforms applied, so bigger is better, this is the probablity the score is correct.
 	double Inv(double p);     //!< This is score for which one would obtain CDF probability p (i.e. x such that p = CDF(x))
 
 	int ReNormalize(double *invec, double *outvec, int length);     //!< W-score Renormalize the vecotor invec[0:length-1] into outvec (in and out can be same) return is 1 for success, <0 for error code
+	int ReNormalizePDF(double *invec, double *outvec, int length);
 
-
-        /// Use FitHight if your data is such that is larger is better.  The code will still transform, and keep parmeters to keep small data away from zero.  
+        /// Use FitHight if your data is such that is larger is better.  The code will still transform, and keep parmeters to keep small data away from zero.
         // If you get scores that are complain about it being negative, make a MR object with different (larger) translate amount
         /// returns 1 for success, <0 for error code
-	int FitHigh(double* inputData, int inputDataSize,  int fit_size=-1); 
+	int FitHigh(double* inputData, int inputDataSize,  int fit_size=-1);
 
         ///Use FitLow if your data is such that smaller scores are better.. we'll transform it for you and keep the
-        ///transform parameters in the class so later calls to W_score or CDF do the right thing.  
+        ///transform parameters in the class so later calls to W_score or CDF do the right thing.
         /// returns 1 for success, <0 for error code
-	int FitLow(double* inputData, int inputDataSize,  int fit_size=-1);// 
+	int FitLow(double* inputData, int inputDataSize,  int fit_size=-1);//
 
-        /// the types of fitting supported for SVM modeling 
-        typedef enum  {complement_reject=1, positive_reject=2, complement_model=3, positive_model=4} MR_fitting_type; 
+        /// the types of fitting supported for SVM modeling
+        typedef enum  {complement_reject=1, positive_reject=2, complement_model=3, positive_model=4} MR_fitting_type;
 
         /// The function to use if you have SVM data, it separated out the data for the label of interst (or rejecting
-        /// the complement of that label, which is the default) and uses that for fitting.  
-        /// Returns 1 if it worked, <0 for error codes. 
-        int FitSVM(svm_node_libsvm* SVMdata, int inputDataSize, int label_of_interest =1, bool label_has_positive_score=true, MR_fitting_type fit_type=complement_reject, int fit_size=9 ); 
+        /// the complement of that label, which is the default) and uses that for fitting.
+        /// Returns 1 if it worked, <0 for error codes.
+        int FitSVM(svm_node_libsvm* SVMdata, int inputDataSize, int label_of_interest =1, bool label_has_positive_score=true, MR_fitting_type fit_type=complement_reject, int fit_size=9 );
 
 
         friend std::ostream& operator<<( std::ostream&, const MetaRecognition& );         //!< various I/O functions
@@ -117,15 +116,26 @@ public:
 	void Load(char* filename);        //!< various I/O functions
         int get_fitting_size();  //!<  Get get_fitting_size (aka tail size)
         int set_fitting_size(int nsize);  //!<  reset object and define new fitting size
-        double get_translate_amount();  //!<  Get get_internal tranlation amount (you probably don't need this, but just in case)
-        int set_translate_amount(double ntrans);  //!<  reset object and define new translate amount.. if you get errors because of negative data, increase this
+        int get_translate_amount();  //!<  Get get_internal tranlation amount (you probably don't need this, but just in case)
+        int set_translate_amount(int ntrans);  //!<  reset object and define new translate amount.. if you get errors because of negative data, increase this
         int get_sign();   //!<  Get get_internal sign variable. (you probably don't need this, but just in case)
         int set_sign(int nsign); //!<  reset object and  set sign  (you probably don't need this, but just in case)
         double get_small_score();   //!<  Get get_internal smaller translation amount (you probably don't need this, but just in case)
         double set_small_score(double nscore); //!<  reset object and  reset internal smaller translation amount (you probably don't need this, but just in case)
+
+	void set_scale_param(double scale);
+        void set_shape_param(double shape);
+
+
         bool verbose;  //!<  do we print internal/debugging stuff.  Default is false. (you probably don't need this, but just in case)
         std::string to_string(); //!< Convert this object to a C++ string
         void from_string(std::string in); //!< Convert this object from a C++ string
+
+	double get_scale_param();
+	double get_shape_param();
+
+	bool set_valid(); //!< Hack for python functionality
+	bool set_invalid(); //!< Hack for python functionality
 
 protected:
         int EvtGeneric(double* inputData, int inputDataSize, int fit_inward=0, double x=0);
@@ -135,11 +145,10 @@ protected:
 	int sign;   //!< sign is postive is larger is better,  negative means orginally smaller was better (we transformed for fitting).
         MR_fitting_type ftype;  //!< type of fitting used for SVM.. default is reject complement
 	int fitting_size;   //!< tail size for fitting in any of the FitXX functions
-	double translate_amount; //!< we transform data so all fittng data data is positive and bigger is better, this predefined constant helps ensure more of the end-user data is non-negative.  
+	int translate_amount; //!< we transform data so all fittng data data is positive and bigger is better, this predefined constant helps ensure more of the end-user data is non-negative.
 	double small_score;   //!< the smallest score, so all fitting data is consistently postive. part of our transform
-	int scores_to_drop; //!< when fitting for recognition prediction, how many top score are hypothesized to be a match, so we can fit on non-match data.  Only used in for fitting, no impact on transform. 
+	int scores_to_drop; //!< when fitting for recognition prediction, how many top score are hypothesized to be a match, so we can fit on non-match data.  Only used in for fitting, no impact on transform.
         bool isvalid; //!< is the parameters in the object valid. private:
-
 };
 
 #endif

@@ -9,12 +9,8 @@ except ImportError:
     print "You must have Cython >=0.17 and NumPy to build LibMR's python bindings!"
     sys.exit(1)
 
-# Needed to fix pip
-# See https://pypi.python.org/pypi/setuptools_cython/,
-# http://mail.python.org/pipermail/distutils-sig/2007-September/thread.html#8204
-if 'setuptools.extension' in sys.modules:
-    m = sys.modules['setuptools.extension']
-    m.Extension.__dict__ = m._Extension.__dict__
+with open("README.rst") as f:
+    l_descrip=f.read()
 
 setup(name='libmr',
       ext_modules = cythonize(Extension('libmr',[
@@ -26,9 +22,11 @@ setup(name='libmr',
                       language="c++",
                   )),
       data_files = [('libMR', ['libMR/MetaRecognition.h', 'libMR/weibull.h'])],
-      version = "0.1.0",
+      version = "0.1.3",
       description="Python bindings for LibMR, the metarecognition library",
+      long_description=l_descrip,
       url="http://www.metarecognition.com/ml-mr-2/",
       license="http://www.metarecognition.com/libmr-license/",
-      author='Terry Boult',
-)
+      author='Terry Boult, Ethan Rudd, and Manuel Gunther',
+      install_requires=['cython','numpy']
+      )

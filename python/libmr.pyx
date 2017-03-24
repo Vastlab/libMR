@@ -53,11 +53,12 @@ cdef extern from "MetaRecognition.h":
         void Reset()
         bool Predict_Match(double x, double threshold)
         double W_score(double x)
+        double PDF(double x)
         double CDF(double x)
         double Inv(double p)
 
         int ReNormalize(double *invec, double *outvec, int length)
-
+        int ReNormalizePDF(double *invec, double *outvec, int length)
         int FitHigh(double* inputData, int inputDataSize,  int fit_size)
 
         int FitLow(double* inputData, int inputDataSize,  int fit_size)
@@ -78,6 +79,13 @@ cdef extern from "MetaRecognition.h":
         bool verbose
         string to_string()
         void from_string(string input)
+        double get_scale_param()
+        double get_shape_param()
+        void set_scale_param(double scale)
+        void set_shape_param(double shape)
+        bool set_valid()
+        bool set_invalid()
+
 
 
 # This is the Python wrapper class.
@@ -87,7 +95,7 @@ cdef class MR:
                   int fitting_size=9,
                   bool verbose=False,
                   double alpha=5.0,
-                  int translate_amount=10000):
+                  int translate_amount=1):
         """
         Create a new MR object.
         """
@@ -120,6 +128,27 @@ cdef class MR:
     property is_valid:
         def __get__(self):
             return self.thisptr.is_valid()
+    def get_params(self):
+        """scale,shape,translate_amount,small_score"""
+        return (self.thisptr.get_scale_param(),
+                self.thisptr.get_shape_param(),
+                self.thisptr.get_sign(),
+                self.thisptr.get_translate_amount(),
+                self.thisptr.get_small_score())
+
+    def set_params(self,double scale, double shape, int sign, int translate_amount, double small_score):
+        self.thisptr.set_scale_param(scale)
+        self.thisptr.set_shape_param(shape)
+        self.thisptr.set_sign(sign)
+        self.thisptr.set_translate_amount(translate_amount)
+        self.thisptr.set_small_score(small_score)
+        
+    def set_valid(self):
+        return self.thisptr.set_valid()
+
+    def set_invalid(self):
+        return self.thisptr.set_invalid()
+
     def reset(self):
         self.thisptr.Reset()
     def predict_match(self, double x, double threshold = .9999999):
@@ -134,6 +163,15 @@ cdef class MR:
 This is the commonly used function. After fitting, it returns the probability of the given score being "correct".  It is the same as CDF
         """
         return self.thisptr.W_score(x)
+
+    def pdf(self,double x):
+        return self.thisptr.PDF(x)
+
+    def pdf_vector(self,double[::1] invec):
+        cdef np.ndarray[np.double_t,ndim=1]new_vec = np.zeros(len(invec), dtype='d')
+        self.thisptr.ReNormalizePDF(&invec[0], &new_vec[0], len(invec))
+        return new_vec
+    
     def cdf(self, double x):
         """
         This is the cummumlative probablity of match being corrrect (or more precisely the probility the score (after transform) being an outlier for the distribution, which given the transforms applied, so bigger is better, this is the probablity the score is correct.
@@ -143,7 +181,7 @@ This is the commonly used function. After fitting, it returns the probability of
         """
         This is score for which one would obtain CDF probability p (i.e. x such that p = CDF(x))
         """
-        return self.Inv(p)
+        return self.thisptr.Inv(p)
     def w_score_vector(self, double[::1] invec):
         """
         Apply w_score to each element of invec, returning a new vector of W-scores

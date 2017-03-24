@@ -55,7 +55,7 @@ extern int weibull_fit_verbose_debug;
 #ifdef __cplusplus
 }
 #endif
-MetaRecognition::MetaRecognition(int scores_to_dropx,  int fitting_sizex, bool verb, double alphax, double translate_amountx):
+MetaRecognition::MetaRecognition(int scores_to_dropx,  int fitting_sizex, bool verb, double alphax, int translate_amountx):
   scores_to_drop(scores_to_dropx),verbose(verb),fitting_size(fitting_sizex),alpha(alphax),translate_amount(translate_amountx)
 {
   memset(parmhat,0,sizeof(parmhat));
@@ -146,6 +146,15 @@ double MetaRecognition::CDF(double x)
   return wscore;
 };
 
+double MetaRecognition::PDF(double x){
+  if(!isvalid) return -9999.0;
+  double translated_x = x*sign + translate_amount - small_score;
+  double prob = weibull_pdf(translated_x,parmhat[0],parmhat[1]);
+  if(ftype==complement_model || ftype==positive_model) return -prob;
+  return prob;
+
+}
+
 double MetaRecognition::W_score(double x){
     return CDF(x);
 };
@@ -166,6 +175,14 @@ int MetaRecognition::ReNormalize(double *invec, double *outvec, int length)
   return rval;
 }
 
+int MetaRecognition::ReNormalizePDF(double *invec, double * outvec, int length){
+  if(!isvalid) return -9997.0;
+  int rval=1;
+  for(int i=0; i< length; i++){
+    outvec[i] = PDF(invec[i]);
+  }
+  return rval;
+}
 
 //used by weibull__evt_low and weibull__evt_high, which sets the desired sign(low -1, high 1)
 //before passing to generic
@@ -174,6 +191,7 @@ int MetaRecognition::EvtGeneric(double* inputData, int inputDataSize, int inward
   if(fitting_size > inputDataSize) {
     fprintf(stderr,"In MetaRecognition,  warning asked to fit with tail size %d but input data only %d,  returning -1\n",
            fitting_size, -inputDataSize);
+    return -1;
   }
 
   double * inputDataCopy = (double *) malloc(sizeof(double) * inputDataSize);
@@ -387,7 +405,7 @@ void MetaRecognition::Save(FILE *outputFile) const
                   "%21.18g %21.18g " //parmci 
                   "%21.18g %21.18g  "
                   "%d %f %d %d "  //sign, alpha, fitting size
-                  "%lf %21.18g %d\n", //translate,  small_score, scores_to_drop
+                  "%d %21.18g %d\n", //translate,  small_score, scores_to_drop
                   parmhat[0], parmhat[1],
                   parmci[0],parmci[1],
                   parmci[2],parmci[3],
@@ -409,7 +427,7 @@ void MetaRecognition::Load(FILE *inputFile)
                        "%lf %lf " //parmci 
                        "%lf %lf "
                        "%d %lf %d %d "  //sign, alpha, fitting size
-                       "%lf %lf %d ", //translate, small_score, scores_to_drop, 
+                       "%d %lf %d ", //translate, small_score, scores_to_drop, 
                        parmhat, parmhat+1,
                        parmci,parmci+1,
                        parmci+2,parmci+3,
@@ -458,9 +476,23 @@ void MetaRecognition::from_string(std::string input) {
 
 int MetaRecognition::set_fitting_size(int nsize){ isvalid=false; return fitting_size=nsize;}
 int MetaRecognition::get_fitting_size(){ return fitting_size;}
-double MetaRecognition::get_translate_amount(){ return translate_amount;}
-int MetaRecognition::set_translate_amount(double ntrans) {isvalid=false; return translate_amount=ntrans;}
+int MetaRecognition::get_translate_amount(){ return translate_amount;}
+int MetaRecognition::set_translate_amount(int ntrans) {isvalid=false; return translate_amount=ntrans;}
 double MetaRecognition::get_small_score(){return small_score;}
-double MetaRecognition::set_small_score(double nscore){isvalid=false;  return small_score=nscore;}
+double MetaRecognition::set_small_score(double nscore){isvalid=true;  return small_score=nscore;}
 int MetaRecognition::get_sign(){return sign;}
 int MetaRecognition::set_sign(int nsign){return sign=nsign;}
+
+double MetaRecognition::get_scale_param(){return parmhat[0];}
+double MetaRecognition::get_shape_param(){return parmhat[1];}
+void MetaRecognition::set_scale_param(double scale){parmhat[0] = scale;}
+void MetaRecognition::set_shape_param(double shape){parmhat[1] = shape;}
+
+bool MetaRecognition::set_valid(){
+  isvalid = true;
+  return true;
+}
+bool MetaRecognition::set_invalid(){
+  isvalid = false;
+  return false;
+}
