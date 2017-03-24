@@ -1,0 +1,2 @@
+include AUTHORS COPYING README.rst python/libmr.pyx
+exclude python/libmr.cpp
