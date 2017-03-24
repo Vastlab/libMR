@@ -1,2 +1,4 @@
-include AUTHORS COPYING LICENSE.TXT README.rst python/libmr.pyx
+include AUTHORS COPYING LICENSE.TXT README.rst
+include libMR/MetaRecognition.* libMR/weibull.*
+include python/libmr.pyx
 exclude python/libmr.cpp
