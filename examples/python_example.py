@@ -30,4 +30,6 @@ for tailsize in [10,30,50]:
     ax2.plot(xs, mr.w_score_vector(xs), label="Tailsize: %d"%tailsize)
 ax2.legend()
 
+plt.tight_layout()
 plt.show()
+raw_input("Press Enter to close")

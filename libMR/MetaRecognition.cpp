@@ -13,39 +13,39 @@ No restrictions on government use apply after the expiration date shown above.  
 
 /** \mainpage
 
-  
-    This library provides support for meta-recognition, i.e. recognizing when a recognition system is working well and when it is not and using that self-knowledge to improve the system.    It can be used for prediction of failure,  fusion,  score renormalization, SVM renormalization and converting SVM or recognition scores into statistially well supported probility estimtes.  The analysis is based on an analysis of the recognition system scores. 
+
+    This library provides support for meta-recognition, i.e. recognizing when a recognition system is working well and when it is not and using that self-knowledge to improve the system.    It can be used for prediction of failure,  fusion,  score renormalization, SVM renormalization and converting SVM or recognition scores into statistially well supported probility estimtes.  The analysis is based on an analysis of the recognition system scores.
 
 
-The fundamental ideas are described in 
+The fundamental ideas are described in
 
 "Meta-Recognition: The Theory and Practice of Recognition Score Analysis,"
 Walter J. Scheirer, Anderson Rocha, Ross Micheals, Terrance E. Boult,
 IEEE Transactions on Pattern Analysis and Machine Intelligence (T-PAMI),
 33(8), pp 1689--1695, Aug, 2011.
 
-and SVM support as described in 
+and SVM support as described in
 
 "Multi-Attribute Spaces: Calibration for Attribute Fusion and Similarity Search,"
 Walter J. Scheirer, Neeraj Kumar, Peter N. Belhumeur, Terrance E. Boult,
 Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR),
 June 2012.
- 
 
-The underlying extream value theory provide stong theortical basis for the computations, but to make it useful one must transform the data into the proper frame.   The C++ version provides objects that can compute and store information about the transform and then provide for prediction, w-score values (probability estimates), or  renormalizatoin of a vector of data. 
-   
-  The library also contains a  "C" interface functions for very basic weilbull usage for Meta-Recognition.    
+
+The underlying extream value theory provide stong theortical basis for the computations, but to make it useful one must transform the data into the proper frame.   The C++ version provides objects that can compute and store information about the transform and then provide for prediction, w-score values (probability estimates), or  renormalizatoin of a vector of data.
+
+  The library also contains a  "C" interface functions for very basic weilbull usage for Meta-Recognition.
   The C-based library  has a number of STRONG assumptions you must follow as we cannot test for all of them.
-    1) All fitting and testing are presuming  "larger is better",  If you are fitting something where smaller is better you need to transform it before fitting. 
-    2) All data is positive (okay we can and do test for that, but better to know upfront what you are doing) 
+    1) All fitting and testing are presuming  "larger is better",  If you are fitting something where smaller is better you need to transform it before fitting.
+    2) All data is positive (okay we can and do test for that, but better to know upfront what you are doing)
     3) There must be sufficient range in your data to actually fit the weilbull.  If all the data is the same, or nearly the same, it may fal to converge and will report errors.
 
-    While free for non-commercial use this library is subject to the license restrictions, see LICENSE.TXT  for details.  
-    
+    While free for non-commercial use this library is subject to the license restrictions, see LICENSE.TXT  for details.
+
 */
 
 #include "MetaRecognition.h"
-#include <string.h> 
+#include <string.h>
 #include <stdlib.h>
 
 #ifdef __cplusplus
@@ -96,26 +96,26 @@ void MetaRecognition::Reset(){
 
 int compare_sort_decending (const void * a, const void * b)
 {
-	const double *da = (const double *) a;
-	const double *db = (const double *) b;
-	return  (*da < *db) - (*da > *db);
+  const double *da = (const double *) a;
+  const double *db = (const double *) b;
+  return  (*da < *db) - (*da > *db);
 }
 
 int compare_sort_assending (const void * a, const void * b)
 {
-	const double *da = (const double *) a;
-	const double *db = (const double *) b;
-	return   (*da > *db) - (*da < *db);
+  const double *da = (const double *) a;
+  const double *db = (const double *) b;
+  return   (*da > *db) - (*da < *db);
 }
 
 inline const char * const BoolToString(bool b)
 {
-	return b ? "true" : "false";
+  return b ? "true" : "false";
 }
 
 inline int  const BoolToInt(bool b)
 {
-	return b ? 1 : 0;
+  return b ? 1 : 0;
 }
 
 inline const bool IntToBool(const char * s)
@@ -129,7 +129,7 @@ inline const bool IntToBool(const char * s)
 //May eventually be a good idea to move real implementations of the functions here
 //IF we do away with the C implementation. For now this allows for backward compantiblity with
 //older code
-// Inv computes the scores of the inverse CDF, i.e. returns y such that  CDF(y) = 
+// Inv computes the scores of the inverse CDF, i.e. returns y such that  CDF(y) =
 double MetaRecognition::Inv(double x)
 {
   if(!isvalid) return -9999.0;
@@ -206,19 +206,19 @@ int MetaRecognition::EvtGeneric(double* inputData, int inputDataSize, int inward
     for(int i=0; i < inputDataSize; i++)       inputDataCopy[i] = (inputData[i]*sign);       //doing extremes just flip sign if needed
     icnt = inputDataSize;
   }
-  else if(inward  && (sign < 0)) { /* this is fit above x but  approaching x */ 
+  else if(inward  && (sign < 0)) { /* this is fit above x but  approaching x */
     for(int i=0; i < inputDataSize; i++)       {
       if(inputData[i] > x) {
         inputDataCopy[icnt++] = (inputData[i]*sign);       //copy what is above x, and flip signs (so biggest is important)
-      } 
+      }
     }
-  } else if(inward  && (sign > 0)) { /* this is fit below x but  approaching x */ 
+  } else if(inward  && (sign > 0)) { /* this is fit below x but  approaching x */
       for(int i=0; i < inputDataSize; i++)       {
         if(inputData[i] < x) {
-          inputDataCopy[icnt++] = (inputData[i]);       //copy only what is above x. 
-        } 
+          inputDataCopy[icnt++] = (inputData[i]);       //copy only what is above x.
+        }
       }
-  } 
+  }
 
   //sort data and get smallest score
   qsort(inputDataCopy, icnt , sizeof(double), compare_sort_decending);
@@ -231,14 +231,14 @@ int MetaRecognition::EvtGeneric(double* inputData, int inputDataSize, int inward
   }
 
   small_score = dataPtr[fitting_size-1];
-  
+
   for(int i=0; i < fitting_size; i++)
-    {	
+    {
       //translate and subtract small score
       dataPtr[i] = dataPtr[i] + translate_amount - small_score;
     }
-  
- 
+
+
   int rval =   weibull_fit(parmhat, parmci, dataPtr, alpha, fitting_size);
   isvalid= true;
   if(rval != 1) Reset();
@@ -299,7 +299,7 @@ int MetaRecognition::FitSVM(svm_node_libsvm* SVMdata, int inputDataSize, int lab
 
 
   /* expected sign combines with reject_complement to determine if we have to flip or not.
-     We flip if positives scores, with smaller is better, is the goal, 
+     We flip if positives scores, with smaller is better, is the goal,
      we flip if sign_of_expected_score >0 and !force_rejection
      we flip if sign_of_expected_score <0 and force_rejection */
 
@@ -322,14 +322,14 @@ int MetaRecognition::FitSVM(svm_node_libsvm* SVMdata, int inputDataSize, int lab
   }
 
   small_score = dataPtr[fitting_size - 1];
-  
+
   for(int i=0; i < fitting_size; i++)
-    {	
+    {
       //translate and subtract small score
       dataPtr[i] = dataPtr[i] + translate_amount - small_score;
     }
-  
-  
+
+
   int rval = weibull_fit(parmhat, parmci, dataPtr, alpha, fitting_size);
   isvalid= true;
   if(rval != 1) Reset();
@@ -339,26 +339,26 @@ int MetaRecognition::FitSVM(svm_node_libsvm* SVMdata, int inputDataSize, int lab
 
 void MetaRecognition::Save(std::ostream &outputStream) const
 {
-	if(outputStream.good() && isvalid)
-	{
-		try {
-		outputStream.precision(21);
-		outputStream.setf(std::ios::scientific,std::ios::floatfield); 
-		outputStream << parmhat[0] << " " << parmhat[1] <<   "  "  
-                             << parmci[0] << " " << parmci[1] << " " 
-                             << parmci[2] << " " << parmci[3] << "  " 
-                             << sign << " " 
-                             << alpha << " " 
-                             << (int) ftype << " " 
-                             << fitting_size << " " 
-                             << translate_amount << " " 
+  if(outputStream.good() && isvalid)
+  {
+    try {
+    outputStream.precision(21);
+    outputStream.setf(std::ios::scientific,std::ios::floatfield);
+    outputStream << parmhat[0] << " " << parmhat[1] <<   "  "
+                             << parmci[0] << " " << parmci[1] << " "
+                             << parmci[2] << " " << parmci[3] << "  "
+                             << sign << " "
+                             << alpha << " "
+                             << (int) ftype << " "
+                             << fitting_size << " "
+                             << translate_amount << " "
                              << small_score<< " "
                              << scores_to_drop
                              << std::endl;
-		} catch(std::bad_alloc& e) {
-			std::cout << "Could not allocate the required memory, failed with error: '" << e.what() << "'" << std::endl;
-		}
-	}
+    } catch(std::bad_alloc& e) {
+      std::cout << "Could not allocate the required memory, failed with error: '" << e.what() << "'" << std::endl;
+    }
+  }
 }
 
 std::ostream& operator<< ( std::ostream& os, const MetaRecognition& mr )
@@ -384,11 +384,11 @@ void MetaRecognition::Load(std::istream &inputStream)
       inputStream >> parmhat[0] >> parmhat[1]
                   >> parmci[0] >> parmci[1]
                   >> parmci[2] >> parmci[3]
-                  >> sign 
-                  >> alpha 
-                  >> iftype 
-                  >> fitting_size 
-                  >> translate_amount 
+                  >> sign
+                  >> alpha
+                  >> iftype
+                  >> fitting_size
+                  >> translate_amount
                   >> small_score
                   >> scores_to_drop;
       isvalid=true;
@@ -398,11 +398,11 @@ void MetaRecognition::Load(std::istream &inputStream)
 
 void MetaRecognition::Save(FILE *outputFile) const
 {
-	if((outputFile != NULL) && !feof(outputFile))
-	{
-          fprintf(outputFile, 
+  if((outputFile != NULL) && !feof(outputFile))
+  {
+          fprintf(outputFile,
                   "%21.18g %21.18g  " //parmaht
-                  "%21.18g %21.18g " //parmci 
+                  "%21.18g %21.18g " //parmci
                   "%21.18g %21.18g  "
                   "%d %f %d %d "  //sign, alpha, fitting size
                   "%d %21.18g %d\n", //translate,  small_score, scores_to_drop
@@ -411,7 +411,7 @@ void MetaRecognition::Save(FILE *outputFile) const
                   parmci[2],parmci[3],
                   sign, alpha, (int) ftype,fitting_size,
                   translate_amount, small_score, scores_to_drop);
-	}
+  }
 }
 
 void MetaRecognition::Load(FILE *inputFile)
@@ -421,13 +421,13 @@ void MetaRecognition::Load(FILE *inputFile)
   isvalid=false;
   if((inputFile != NULL) && !feof(inputFile))
     {
-      
-      retcode = fscanf(inputFile, 
+
+      retcode = fscanf(inputFile,
                        "%lf %lf " //parmaht
-                       "%lf %lf " //parmci 
+                       "%lf %lf " //parmci
                        "%lf %lf "
                        "%d %lf %d %d "  //sign, alpha, fitting size
-                       "%d %lf %d ", //translate, small_score, scores_to_drop, 
+                       "%d %lf %d ", //translate, small_score, scores_to_drop,
                        parmhat, parmhat+1,
                        parmci,parmci+1,
                        parmci+2,parmci+3,
@@ -445,7 +445,7 @@ void MetaRecognition::Save(char* filename) const
   if(fp) {
     Save(fp);
     fclose(fp);
-  } else if(strlen(filename)>0) 
+  } else if(strlen(filename)>0)
     fprintf(stderr,"SaveWeibull could not open file |%s|\n",filename);
   else     fprintf(stderr,"SaveWeibull called with null filename\n");
 }
@@ -457,7 +457,7 @@ void MetaRecognition::Load(char* filename){
     Load(fp);
     isvalid=true;
     fclose(fp);
-  } else if(strlen(filename)>0) 
+  } else if(strlen(filename)>0)
     fprintf(stderr,"LoadWeibull could not open file |%s|\n",filename);
   else     fprintf(stderr,"LoadWeibull called with null filename\n");
 
@@ -471,6 +471,57 @@ std::string MetaRecognition::to_string() {
 void MetaRecognition::from_string(std::string input) {
     std::stringstream iss(input);
     this->Load(iss);
+}
+
+unsigned MetaRecognition::binary_size() const {
+  return 8*sizeof(double) + 4*sizeof(int) + sizeof(MR_fitting_type);
+}
+
+void MetaRecognition::to_binary(unsigned char* data) const{
+  // write parmhat and parmci
+  memcpy(data, parmhat, 2*sizeof(double));
+  data += 2*sizeof(double);
+  memcpy(data, parmci, 4*sizeof(double));
+  data += 4*sizeof(double);
+  // write remaining stuff
+  memcpy(data, &sign, sizeof(sign));
+  data += sizeof(sign);
+  memcpy(data, &alpha, sizeof(alpha));
+  data += sizeof(alpha);
+  memcpy(data, &ftype, sizeof(ftype));
+  data += sizeof(ftype);
+  memcpy(data, &fitting_size, sizeof(fitting_size));
+  data += sizeof(fitting_size);
+  memcpy(data, &translate_amount, sizeof(translate_amount));
+  data += sizeof(translate_amount);
+  memcpy(data, &small_score, sizeof(small_score));
+  data += sizeof(small_score);
+  memcpy(data, &scores_to_drop, sizeof(scores_to_drop));
+  data += sizeof(scores_to_drop);
+}
+
+void MetaRecognition::from_binary(unsigned char* data){
+  // write parmhat and parmci
+  memcpy(parmhat, data, 2*sizeof(double));
+  data += 2*sizeof(double);
+  memcpy(parmci, data, 4*sizeof(double));
+  data += 4*sizeof(double);
+  // write remaining stuff
+  memcpy(&sign, data, sizeof(sign));
+  data += sizeof(sign);
+  memcpy(&alpha, data, sizeof(alpha));
+  data += sizeof(alpha);
+  memcpy(&ftype, data, sizeof(ftype));
+  data += sizeof(ftype);
+  memcpy(&fitting_size, data, sizeof(fitting_size));
+  data += sizeof(fitting_size);
+  memcpy(&translate_amount, data, sizeof(translate_amount));
+  data += sizeof(translate_amount);
+  memcpy(&small_score, data, sizeof(small_score));
+  data += sizeof(small_score);
+  memcpy(&scores_to_drop, data, sizeof(scores_to_drop));
+  data += sizeof(scores_to_drop);
+  isvalid = true;
 }
 
 

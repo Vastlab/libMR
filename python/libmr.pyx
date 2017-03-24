@@ -107,6 +107,8 @@ cdef class MR:
         MR object to the given data. We'll transform it for you
         and keep the transform parameters in the class so later calls
         to W_score or CDF do the right thing."""
+        if len(inputData) < fit_size:
+          raise ValueError("The given fit_size %d is larger than the data size %d" % (fit_size, len(inputData)))
         cdef double *data
         data = <double*>malloc(sizeof(double)*len(inputData))
         for i in xrange(len(inputData)):
@@ -119,6 +121,8 @@ cdef class MR:
         and keep the transform parameters in the class so later calls
         to W_score or CDF do the right thing.
         """
+        if len(inputData) < fit_size:
+          raise ValueError("The given fit_size %d is larger than the data size %d" % (fit_size, len(inputData)))
         cdef double *data
         data = <double*>malloc(sizeof(double)*len(inputData))
         for i in xrange(len(inputData)):
@@ -142,7 +146,7 @@ cdef class MR:
         self.thisptr.set_sign(sign)
         self.thisptr.set_translate_amount(translate_amount)
         self.thisptr.set_small_score(small_score)
-        
+
     def set_valid(self):
         return self.thisptr.set_valid()
 
@@ -171,7 +175,7 @@ This is the commonly used function. After fitting, it returns the probability of
         cdef np.ndarray[np.double_t,ndim=1]new_vec = np.zeros(len(invec), dtype='d')
         self.thisptr.ReNormalizePDF(&invec[0], &new_vec[0], len(invec))
         return new_vec
-    
+
     def cdf(self, double x):
         """
         This is the cummumlative probablity of match being corrrect (or more precisely the probility the score (after transform) being an outlier for the distribution, which given the transforms applied, so bigger is better, this is the probablity the score is correct.

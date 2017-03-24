@@ -17,11 +17,11 @@ setup(name='libmr',
                       language="c++",
                   )),
       data_files = [('libMR', ['libMR/MetaRecognition.h', 'libMR/weibull.h'])],
-      version = "0.1.3",
-      description="Python bindings for LibMR, the metarecognition library",
+      version = "0.1.4",
+      description="LibMR, the MetaRecognition library",
       long_description=open("README.rst").read(),
       url="https://github.com/Vastlab/libMR",
       license="http://www.metarecognition.com/libmr-license/",
       author='Terry Boult, Ethan Rudd, and Manuel Gunther',
       install_requires=['cython','numpy']
-      )
+)
