@@ -85,6 +85,9 @@ cdef extern from "MetaRecognition.h":
         void set_shape_param(double shape)
         bool set_valid()
         bool set_invalid()
+        unsigned binary_size()
+        void to_binary(unsigned char* data)
+        void from_binary(const unsigned char* data)
 
 
 
@@ -200,6 +203,13 @@ This is the commonly used function. After fitting, it returns the probability of
         return self.thisptr.to_string()
     def __repr__(self):
         return "<MR object: %r>" % str(self)
+    def as_binary(self):
+        """Returns a binary representation of this class"""
+        cdef unsigned char* data = <unsigned char*>malloc(self.thisptr.binary_size())
+        self.thisptr.to_binary(data)
+        cdef bytearray retval = data[:self.thisptr.binary_size()]
+        free(data)
+        return retval
     property tailsize:
         def __get__(self):
             return self.thisptr.get_fitting_size()
@@ -232,4 +242,11 @@ def load_from_string(str input):
     """
     pymr = MR()
     pymr.thisptr.from_string(input)
+    return pymr
+
+def load_from_binary(bytearray input):
+    """Loads a MR object from the given binary representation and returns it."""
+    cdef unsigned char* data = input
+    pymr = MR()
+    pymr.thisptr.from_binary(data)
     return pymr
