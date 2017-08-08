@@ -210,6 +210,10 @@ This is the commonly used function. After fitting, it returns the probability of
         cdef bytearray retval = data[:self.thisptr.binary_size()]
         free(data)
         return retval
+    def __reduce__(self):
+        """Makes the MR object picklable"""
+        return (load_from_binary, (self.as_binary(),))
+
     property tailsize:
         def __get__(self):
             return self.thisptr.get_fitting_size()
