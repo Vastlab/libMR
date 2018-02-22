@@ -35,6 +35,7 @@ from libcpp cimport bool
 from libcpp.string cimport string
 cimport numpy as np
 import numpy as np
+import sys
 
 cdef extern from "MetaRecognition.h":
     enum MR_fitting_type:
@@ -200,6 +201,8 @@ This is the commonly used function. After fitting, it returns the probability of
         """
         Serialize the MR object to a string. Use load_from_string to recover it.
         """
+        if sys.version_info >= (3,):
+            return str(self.thisptr.to_string(), 'utf-8')
         return self.thisptr.to_string()
     def __repr__(self):
         return "<MR object: %r>" % str(self)
