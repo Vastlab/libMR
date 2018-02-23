@@ -248,7 +248,7 @@ def load_from_string(str input):
     Deserialize an MR object. This turns a string back into an MR object; it is the inverse of str(MR())
     """
     pymr = MR()
-    pymr.thisptr.from_string(input)
+    pymr.thisptr.from_string(input.encode('utf-8'))
     return pymr
 
 def load_from_binary(bytearray input):
