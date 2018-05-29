@@ -1,7 +1,7 @@
 /*  \index
- * weibull.cpp provides the core functionality for computing weibull fittings, as well as CDF and INF given parms 
- *  
- * 
+ * weibull.cpp provides the core functionality for computing weibull fittings, as well as CDF and INF given parms
+ *
+ *
  * @Author Brian Heflin <bheflin@securics.com>
  * @Author Walter Scheirer <walter@securics.com>
  * @Author Terry Boult tboult@securics.com
@@ -30,7 +30,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <memory.h>
 #include <float.h>
 
@@ -40,8 +39,8 @@
 extern "C" {
 #endif
 
-  /* if WEIBULL_USE_ASSERTS is defined, the code will use asserts to ensure its requirements are true, otherwise it returns error codes. Default is not defined */ 
-  /* if WEIBULL_IGNORE_ERRORS is defined, the code will just presume things will work out and not waste time on testing for error. Default is not defined */ 
+  /* if WEIBULL_USE_ASSERTS is defined, the code will use asserts to ensure its requirements are true, otherwise it returns error codes. Default is not defined */
+  /* if WEIBULL_IGNORE_ERRORS is defined, the code will just presume things will work out and not waste time on testing for error. Default is not defined */
 
   /*#define WEIBULL_USE_ASSERTS */
   /* #define WEIBULL_IGNORE_ERRORS  */
@@ -55,15 +54,15 @@ extern "C" {
 
 #ifdef WEIBULL_IGNORE_ERRORS
   int weibull_fit_verbose_debug=0;
-#define WEIBULL_ERROR_HANDLER(x,msg) 
-#else 
+#define WEIBULL_ERROR_HANDLER(x,msg)
+#else
   int weibull_fit_verbose_debug=1;
   static int  tthrow(int x, const char* msg){if(weibull_fit_verbose_debug) fprintf(stderr,"%s\n",msg); return x;}
 #define WEIBULL_ERROR_HANDLER(x,msg) return tthrow(x,msg)
 #endif
 
-  
-  
+
+
 double weibull_pdf(double x, double scale, double shape)
 {
     double pdf;
@@ -77,7 +76,7 @@ double weibull_pdf(double x, double scale, double shape)
     assert(shape>0);
 #else
     if(scale<=0) WEIBULL_ERROR_HANDLER( -1, "Bad scale in weibull_pdf");
-    if(shape <=0) WEIBULL_ERROR_HANDLER(-2, "Bad shape in weibull_pdf"); 
+    if(shape <=0) WEIBULL_ERROR_HANDLER(-2, "Bad shape in weibull_pdf");
 #endif
 #endif
 
@@ -90,15 +89,15 @@ double weibull_pdf(double x, double scale, double shape)
 
 
 
-  /*  weibull_cdf computes the probability (given our assumptions) that the value x is an outlier ABOVE the fit distribution.  if the distribution was non-match data, then it provides this probability that x is a match score.   If data was match-data then it would be the probability of it being a larger non-match. 
+  /*  weibull_cdf computes the probability (given our assumptions) that the value x is an outlier ABOVE the fit distribution.  if the distribution was non-match data, then it provides this probability that x is a match score.   If data was match-data then it would be the probability of it being a larger non-match.
   computes @f[ 1-e^{{x/scale}^{shape}} @f]
 
   @param x  the location at which to compute the probability of being an outlier
-  @param scale the scale parameter of the Weibull.  This is the first element in weibullparms (as computed by our weibull_fit) 
-  @param shape the scale parameter of the Weibull.  This is the first second in weibullparms (as computed by our weibull_fit) 
-  @return if in the range [0-1] it is the probability of X being an outlier.  Any value < 0 is an error code.  returns -1 for invalid scale <=0 ,  -2 for invalid shape <=0 
+  @param scale the scale parameter of the Weibull.  This is the first element in weibullparms (as computed by our weibull_fit)
+  @param shape the scale parameter of the Weibull.  This is the first second in weibullparms (as computed by our weibull_fit)
+  @return if in the range [0-1] it is the probability of X being an outlier.  Any value < 0 is an error code.  returns -1 for invalid scale <=0 ,  -2 for invalid shape <=0
   *
-  */ 
+  */
 double weibull_cdf(double x, double scale, double shape)
 {
     double cdf;
@@ -112,7 +111,7 @@ double weibull_cdf(double x, double scale, double shape)
     assert(shape>0);
 #else
     if(scale<=0) WEIBULL_ERROR_HANDLER( -1, "Bad scale in weibull_cdf");
-    if(shape <=0) WEIBULL_ERROR_HANDLER(-2, "Bad shape in weibull_cdf"); 
+    if(shape <=0) WEIBULL_ERROR_HANDLER(-2, "Bad shape in weibull_cdf");
 #endif
 #endif
 
@@ -125,14 +124,14 @@ double weibull_cdf(double x, double scale, double shape)
 }
 
 
-  /*  weibull_inv computes the inverse weibull, i.e. returns the score S (given our assumptions) such that x=weibull_cdf(s,scale,shape). Note it estimates from above, so if x=1.0 expect an answer of inf (infinity). 
+  /*  weibull_inv computes the inverse weibull, i.e. returns the score S (given our assumptions) such that x=weibull_cdf(s,scale,shape). Note it estimates from above, so if x=1.0 expect an answer of inf (infinity).
 
   @param x  the location at which you compute the inverse (must be between [0,1]
-  @param scale the scale parameter of the weibull.  This is the first element in weibullparms (as computed by our weibull_fit) 
-  @param shape the scale parameter of the weibull.  This is the first second in weibullparms (as computed by our weibull_fit) 
+  @param scale the scale parameter of the weibull.  This is the first element in weibullparms (as computed by our weibull_fit)
+  @param shape the scale parameter of the weibull.  This is the first second in weibullparms (as computed by our weibull_fit)
   @return if X in the range [0-1], return S such that x=weibull_cdf(s,scale,shape).  The return value is in the range [0,inf].  Any return value < 0 is an error code.  returns -1 for invalid scale <=0 ,  -2 for invalid shape <=0  -3 for  X<0, -4 for x >1
   *
-  */ 
+  */
 double weibull_inv(double x, double scale, double shape)
 {
     double inv;
@@ -145,11 +144,11 @@ double weibull_inv(double x, double scale, double shape)
     assert(x<=1);
 #else
     if(scale<=0) WEIBULL_ERROR_HANDLER( -1, "Bad scale in weibull_cdf");
-    if(shape <=0) WEIBULL_ERROR_HANDLER(-2, "Bad shape in weibull_cdf"); 
+    if(shape <=0) WEIBULL_ERROR_HANDLER(-2, "Bad shape in weibull_cdf");
     if(x<0) WEIBULL_ERROR_HANDLER(-3,"Invalid X<0 in weibull_ing");
      if(x>1) WEIBULL_ERROR_HANDLER(-4,"Invalid X>1 in weibull_ing");
-#endif 
-#endif 
+#endif
+#endif
 
     tempVal = log(1-x);
     tempVal *= -1;
@@ -163,7 +162,7 @@ double weibull_inv(double x, double scale, double shape)
 }
 
   /*
-     printWeibullBuildInfo prints, to the file provied as an argument some information about the current package  build information 
+     printWeibullBuildInfo prints, to the file provied as an argument some information about the current package  build information
   */
 
 void printWeibullBuildInfo(FILE *fh)
@@ -196,11 +195,11 @@ static inline int fix(double n)
 
 
 
-/* erf function, based on Fortran calcerf  which is turn is basd on 
-  "Rational Chebyshev approximations for the error function" C   by W. J. Cody, Math. Comp., 1969, PP. 631-638. 
+/* erf function, based on Fortran calcerf  which is turn is basd on
+  "Rational Chebyshev approximations for the error function" C   by W. J. Cody, Math. Comp., 1969, PP. 631-638.
   This  code uses rational functions that theoretically approximate  erf(x)  and  erfc(x)  to at least 18 significant decimal digits, and on IEEE hardware is generally to near machine precision.
-Note there are accelerated versions for GPUs and in the Intel Math Kernel library, so if you do this a lot it may be worh using those libraries. 
- */ 
+Note there are accelerated versions for GPUs and in the Intel Math Kernel library, so if you do this a lot it may be worh using those libraries.
+ */
 
 static double wcalcerfc(double x)
 {
@@ -270,9 +269,9 @@ static double wcalcerfc(double x)
 
     }
     else /*% evaluate  erfc  for |x| > 4.0 */
-    {   
+    {
         y = absxk;
-        z = 1/(y*y); 
+        z = 1/(y*y);
         xnum = p[5]*z;
         xden = z;
         for (i = 0; i<4; i++)
@@ -285,7 +284,7 @@ static double wcalcerfc(double x)
         tempVal1=xden + q[4];
         result=tempVal/tempVal1;
 
-        tempVal=1/sqrt(PI);        
+        tempVal=1/sqrt(PI);
         tempVal -= result;
         tempVal1 = y;
         result=tempVal/tempVal1;
@@ -314,7 +313,7 @@ static double wcalcerfc(double x)
     }
     else if (xk < -thresh)/* jint must = 2 */
     {
-      if (xk < -26.628)  /* if less than XNEG (the largest negative argument acceptable to ERFCX) by IEEE standard */ 
+      if (xk < -26.628)  /* if less than XNEG (the largest negative argument acceptable to ERFCX) by IEEE standard */
         {
           result = 1000000; /*%%ERROR (INF) */
             WEIBULL_ERROR_HANDLER(-8,"wcalcerfc helper function failed to converge.." );
@@ -333,11 +332,11 @@ static double wcalcerfc(double x)
     return result;
 }
 
-/* 
+/*
 
-Calculate the inverse complementary error function of the input argument y, for y in the interval [0, 2]. The inverse complementary error function find the value x that satisfies the equation y = erfc(x).  based on fortran code based on  "Rational Chebyshev approximations for the error function" C   by W. J. Cody, Math. Comp., 1969, PP. 631-638. 
-Note there are accelerated versions for GPUs and in the Intel Math Kernel library, so if you do this a lot it may be worh using those libraries. 
- */ 
+Calculate the inverse complementary error function of the input argument y, for y in the interval [0, 2]. The inverse complementary error function find the value x that satisfies the equation y = erfc(x).  based on fortran code based on  "Rational Chebyshev approximations for the error function" C   by W. J. Cody, Math. Comp., 1969, PP. 631-638.
+Note there are accelerated versions for GPUs and in the Intel Math Kernel library, so if you do this a lot it may be worh using those libraries.
+ */
 
 
 static double derfcinv(double x)
@@ -360,7 +359,7 @@ static double derfcinv(double x)
 
     /*Rational approximation for central region */
     if ((xlow <= xk) && (xk <= xhigh))
-    { 
+    {
         q = xk - 1;
         r = q*q;
 
@@ -425,8 +424,8 @@ static int  weibull_neg_log_likelihood(double* nlogL, double* acov, double* weib
                      double* censoring, double* frequency, int size)
 {
     int i;
-    double mu = weibulparms[0]; /* scale */ 
-    double sigma = weibulparms[1]; /* shape */ 
+    double mu = weibulparms[0]; /* scale */
+    double sigma = weibulparms[1]; /* shape */
 
     double* z = (double*)malloc(sizeof(double)*size);
     double* expz = (double*)malloc(sizeof(double)*size);
@@ -465,13 +464,13 @@ static int  weibull_neg_log_likelihood(double* nlogL, double* acov, double* weib
           unc[i]=(1-censoring[i]);
           nH11=nH11+(frequency[i]*expz[i]);
         }
-      
+
       for (i=0; i<size; i++)
         {
           nH12=nH12+(frequency[i] * ((z[i] + 1) * expz[i] - unc[i]));
           nH22=nH22+(frequency[i] * (z[i] *(z[i] + 2) * expz[i] - ((2 * z[i] + 1) *unc[i])));
         }
-      
+
       {
         double sigmaSq = sigma * sigma;
         double avarDenom = (nH11*nH22 - nH12*nH12);
@@ -549,14 +548,14 @@ static int wdfzero(double* sigmahat, double* likelihood_value, double* err, doub
         return 1;
     }
     else if (fb == 0)
-    {   
+    {
         fval=fb;
         *likelihood_value = fval;
         *sigmahat=b;
         return 1;
     }
     else if ((fa > 0) == (fb > 0))
-    {   
+    {
       WEIBULL_ERROR_HANDLER(-4,"ERROR: wdfzero says function values at the interval endpoints must differ in sign\n");
     }
 
@@ -569,30 +568,30 @@ static int wdfzero(double* sigmahat, double* likelihood_value, double* err, doub
       /* value of b, and that c is  on the opposite size of the zero from b. */
         if ((fb > 0) == (fc > 0))
         {
-            c = a;  
+            c = a;
             fc = fa;
-            d = b - a;  
+            d = b - a;
             e = d;
         }
 
         {
           double absFC;
           double absFB;
-          
+
           absFC=fabs(fc);
           absFB=fabs(fb);
-          
+
           if (absFC < absFB)
             {
-              a = b;    
-              b = c;    
+              a = b;
+              b = c;
               c = a;
-              fa = fb;  
-              fb = fc;  
+              fa = fb;
+              fb = fc;
               fc = fa;
             }
         }
-          
+
         /*set up for test of Convergence, is the interval small enough? */
         m = 0.5*(c - b);
 
@@ -603,7 +602,7 @@ static int wdfzero(double* sigmahat, double* likelihood_value, double* err, doub
           absFA=fabs(fa);
           absFB=fabs(fb);
           absE=fabs(e);
-          
+
           {
             tolerance = 2.0*tol *((absB > 1.0) ? absB : 1.0);
 
@@ -614,14 +613,14 @@ static int wdfzero(double* sigmahat, double* likelihood_value, double* err, doub
           if ((absE < tolerance) | (absFA <= absFB))
             {
               /*Bisection */
-              d = m; 
+              d = m;
               e = m;
             }
           else
             {
               /*Interpolation */
               s = fb/fa;
-              
+
               if (a == c)
                 {
                   /*Linear interpolation */
@@ -636,15 +635,15 @@ static int wdfzero(double* sigmahat, double* likelihood_value, double* err, doub
                   p = s*(2.0*m*q*(q - r) - (b - a)*(r - 1.0));
                   q = (q - 1.0)*(r - 1.0)*(s - 1.0);
                 }
-              
-              if (p > 0) 
-                q = -1.0*q; 
+
+              if (p > 0)
+                q = -1.0*q;
               else
                 p = -1.0*p;
             }
           }
 
-              
+
           {
             double tempTolerance = tolerance*q;
             double absToleranceQ;
@@ -652,29 +651,29 @@ static int wdfzero(double* sigmahat, double* likelihood_value, double* err, doub
             double tempEQ = (0.5 * e * q);
             absToleranceQ=fabs(tempTolerance);
             absEQ=fabs(tempEQ);
-            
+
             /*Is interpolated point acceptable */
             if ((2.0*p < 3.0*m*q - absToleranceQ) & (p < absEQ))
               {
-                e = d;  
+                e = d;
                 d = p/q;
               }
             else
               {
-                d = m;  
+                d = m;
                 e = m;
               }
           }
-            
+
         } /*Interpolation */
-          
+
         /*Next point */
         a = b;
         fa = fb;
 
-        if (fabs(d) > tolerance) 
+        if (fabs(d) > tolerance)
             b = b + d;
-        else if (b > c) 
+        else if (b > c)
             b = b - tolerance;
         else
             b = b + tolerance;
@@ -721,7 +720,7 @@ static int wnorminv(double* x, double* p,double *mu, double* sigma, int size)
         double terfc=derfcinv(2*myTemp);
         if(terfc==-9999) WEIBULL_ERROR_HANDLER(-7,"wnorminv fails since derfcinv");
         tempVal1=(-1*sqrt((double)2))* terfc;
-       
+
         myTemp=tempP[2];
         terfc=derfcinv(2*myTemp);
         if(terfc==-9999) WEIBULL_ERROR_HANDLER(-7,"wnorminv fails since derfcinv");
@@ -736,7 +735,7 @@ static int wnorminv(double* x, double* p,double *mu, double* sigma, int size)
         int i;
         for (i=0; i<size; i++)
           {
-            x[i]=tempSigma[i]*(x0[i])+tempMU[i];   
+            x[i]=tempSigma[i]*(x0[i])+tempMU[i];
           }
       }
       free(x0);
@@ -753,7 +752,7 @@ static int wnorminv(double* x, double* p,double *mu, double* sigma, int size)
   /* weibul  fitting is based on  methods developed for S/R and described
      NIST/SEMATECH e-Handbook of Statistical Methods, http://www.itl.nist.gov/div898/handbook/
      Lawless, J.F. (1982) Statistical Models and Methods for Lifetime Data, Wiley,
-     New York.  and  Meeker, W.Q. and L.A. Escobar (1998) Statistical Methods for Reliability Data,         Wiley, New York. 
+     New York.  and  Meeker, W.Q. and L.A. Escobar (1998) Statistical Methods for Reliability Data,         Wiley, New York.
      with some checking and validation with various tools incldsdfasding R, S, MTLAB and
      http://www.engineeredsoftware.com/nasa/pe_weibull_mle.htm   (last accessed June 4 2012)
 
@@ -766,13 +765,13 @@ extern "C" {
 #endif
 
   /*
-     weibull_fit does a maximum likelihood fitting to estimate the shape and scale parameters of a weibull probability distributon  @f[ \frac{shape}{scale} (\frac{x}{scale}e^-{{x/scale}^{shape}} @f]     
-     
+     weibull_fit does a maximum likelihood fitting to estimate the shape and scale parameters of a weibull probability distributon  @f[ \frac{shape}{scale} (\frac{x}{scale}e^-{{x/scale}^{shape}} @f]
+
   @param weibullparms is an array of 2 doubles, which must be preallocated.  On successful completeion it will have shape and scale respectively.
   @param wparm_confidenceintervals is an array of 4 doubles, which must be preallocated.  On successful completeion it will have confidence interval for shape in the first two item and the CI for scale in the second two items
   @param inputData is a pointer the data to use for fitting the distribution. It must have at least size elements
   @param size is the size of the data to be used for fitting.
-  @param alpha is parameter for Confidence interval size estimation. 
+  @param alpha is parameter for Confidence interval size estimation.
   @return return should be  1 if all went well. Values < 0 imply errors in fitting or data.  -1 means some data was negative, -2 means bad data range (e.g. all the same)  -3 or lower means MLE did not converge.
 
    */
@@ -782,8 +781,8 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
 
 
     double PI =  3.141592653589793238462;
-    double FULL_PRECISION_MIN = 2.225073858507201e-308; /* smalled full precision positive number anything smaller is unnormalized, for testing for underflow */ 
-    double FULL_PRECISION_MAX = 1.797693134862315e+308; /* largest full precision positive number, for testing for overflow */ 
+    double FULL_PRECISION_MIN = 2.225073858507201e-308; /* smalled full precision positive number anything smaller is unnormalized, for testing for underflow */
+    double FULL_PRECISION_MAX = 1.797693134862315e+308; /* largest full precision positive number, for testing for overflow */
     double  tol = 1.000000000000000e-006;/* this impacts the non-linear estimation..  if your problem is highly unstable (small scale) this might be made larger but we never recommend anything greater than 10e-5.  Also if larger it will converge faster, so if yo can live with lower accuracy, you can change it */
     double n;
     double nuncensored=0;
@@ -822,7 +821,7 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
 #ifdef WEIBULL_USE_ASSERTS
     assert(inputData[i]>0);
 #else
-    if(inputData[i]<=0) 
+    if(inputData[i]<=0)
       WEIBULL_ERROR_HANDLER( -1,"cannot have data <=0  in call to weibull_fit\n");
 #endif
 #endif
@@ -832,24 +831,24 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
     /*  ********************************************** */
     {
       double mySum;
-      
+
       mySum=0;
       for (i=0; i<size; i++)
         {
           mySum+=frequency[i];
         }
-      
+
       n=mySum;
       if(n<=1) WEIBULL_ERROR_HANDLER(-2,"Insufficient distinct data in weibull_fit\n");
       /*  ********************************************** */
       {
         mySum=0;
-        
+
         for (i=0; i<size; i++)
           {
             mySum+=(frequency[i]*censoring[i]);
           }
-        
+
         ncensored=mySum;
         nuncensored = n - ncensored;
 #ifndef WEIBULL_IGNORE_ERRORS
@@ -857,7 +856,7 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
         assert(nuncensored>0);
         assert(n>1);
 #else
-    /* too much uncensored data means a plateau with no max */ 
+    /* too much uncensored data means a plateau with no max */
         if(nuncensored<=0) WEIBULL_ERROR_HANDLER(-2,"Insufficient distinct data, hit a plateau in weibull_fit\n");
 #endif
 #endif
@@ -870,21 +869,21 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
       double maxVal, minVal;
       double range, maxx;
       double tempVal;
-      
+
       maxVal=-1000000000;
       minVal=1000000000;
-      
+
       for (i=0; i<size; i++)
         {
           tempVal=inputData[i];
-          
+
           if (tempVal < minVal)
             minVal=tempVal;
-          
+
           if (tempVal > maxVal)
             maxVal=tempVal;
         }
-      
+
       range = maxVal - minVal;
       maxx = maxVal;
 #ifndef WEIBULL_IGNORE_ERRORS
@@ -904,38 +903,38 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
       double search_band[2];
 
 
-      
+
       for (i=0; i<size; i++)
         {
           x0[i]=(inputData[i]-maxx)/range;
         }
-      
+
       mean=0;
       myStd=0;
-      
+
       for (i=0; i<size; i++)
         {
           mean+=x0[i];
         }
-      
+
       mean/=n;
 
       for (i=0; i<size; i++)
         {
           var[i] = x0[i] - mean;
         }
-      
+
       for (i=0; i<size; i++)
         {
           myStd+=var[i]*var[i];
         }
-      
+
       myStd/=(n-1);
       myStd=sqrt(myStd);
-      
+
       sigmahat = (sqrt((double)(6.0))*myStd)/PI;
 
-      
+
       meanUncensored=0;
 
       for (i=0; i<size; i++)
@@ -947,12 +946,12 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
         {
           upper=sigmahat;
           lower=0.5*upper;
-          
+
           while((tempVal=weibull_scale_likelihood(lower,x0,frequency,meanUncensored,size)) > 0)
             {
               upper = lower;
               lower = 0.5 * upper;
-              
+
               if (lower < FULL_PRECISION_MIN)
                 {
                   WEIBULL_ERROR_HANDLER(-3,"MLE in wbfit Failed to converge leading for underflow in root finding\n");
@@ -963,7 +962,7 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
         {
           lower = sigmahat;
           upper = 2.0 * lower;
-          
+
           while ((tempVal=weibull_scale_likelihood(upper,x0,frequency,meanUncensored,size)) < 0)
             {
               lower=upper;
@@ -981,17 +980,17 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
       /* ****************************************** */
       search_band[0]=lower;
       search_band[1]=upper;
-      
+
       /* ... Next we  go find the root (zero) of the likelihood eqn which  wil be the MLE for sigma. */
       /* then  the MLE for mu has an explicit formula from that.  */
-      
+
       {
         double err;
         double likelihood_value;
-        
-        
+
+
         code = wdfzero(&sigmahat,&likelihood_value,&err,search_band,tol,x0,frequency,meanUncensored,size);
-        
+
 #ifndef WEIBULL_IGNORE_ERRORS
 #ifdef WEIBULL_USE_ASSERTS
         assert(code == 1);
@@ -1005,16 +1004,16 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
         {
           double muHat;
           double sumfrequency;
-          
+
           muHat=0;
           sumfrequency=0;
-          
+
           for (i=0; i<size; i++)
             {
               tempVal=exp(x0[i]/sigmahat);
               sumfrequency +=(frequency[i]*tempVal);
             }
-          
+
           sumfrequency = sumfrequency / nuncensored;
           muHat = sigmahat * log(sumfrequency);
 
@@ -1031,13 +1030,13 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
     {
           int rval;
           double nlogL=0, tempVal;
-          double transfhat[2], se[2], probs[2],acov[4]; 
+          double transfhat[2], se[2], probs[2],acov[4];
 
           probs[0]=alpha/2;
           probs[1]=1-alpha/2;
           /* ****************************************** */
-          
-          
+
+
           rval=weibull_neg_log_likelihood(&nlogL,acov,weibullparms,inputData,censoring,frequency,size);
           if(rval<0) WEIBULL_ERROR_HANDLER(-5,"Failed to fine final parameters settings MLE failed. Memory leaked");
 
@@ -1045,14 +1044,14 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
           /*Compute the Confidence Interval (CI)  for mu using a normal approximation for muhat.  Compute */
           /*the CI for sigma using a normal approximation for log(sigmahat), and */
           /*transform back to the original scale. */
-          
+
           transfhat[0]=weibullparms[0];
           transfhat[1]=log(weibullparms[1]);
-          
+
           se[0]=sqrt(acov[0]);
           se[1]=sqrt(acov[3]);
           se[1]=se[1]/weibullparms[1];
-          
+
           rval=wnorminv(wparm_confidenceintervals,probs,transfhat,se,4);
           if(rval<0) WEIBULL_ERROR_HANDLER(-7,"Cannot compute confidence interval since wnorminv fails. Memory leaked");
 
@@ -1062,7 +1061,7 @@ int weibull_fit(double* weibullparms, double* wparm_confidenceintervals, double*
           tempVal=wparm_confidenceintervals[2];
           wparm_confidenceintervals[2]=1/wparm_confidenceintervals[3];
           wparm_confidenceintervals[3]=1/tempVal;
-          
+
           wparm_confidenceintervals[0]=exp(wparm_confidenceintervals[0]);
           wparm_confidenceintervals[1]=exp(wparm_confidenceintervals[1]);
 
