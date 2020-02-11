@@ -1,5 +1,6 @@
 from setuptools import setup
 from setuptools.extension import Extension
+import numpy
 
 try:
     from Cython.Build import cythonize
