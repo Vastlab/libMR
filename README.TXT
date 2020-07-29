@@ -23,7 +23,7 @@ or one of our later works if combining it with them.
 
 Changelog
 
-Version 1.2      This version also exports the computed confidence intervals via the python interface
+Version 1.2      This version also exports the computed confidence intervals via the python interface.  Fixed broken wbl-test and added python-example that tests new interface funcions and does not need plotting.
 
 
 Version 1.1
