@@ -21,9 +21,21 @@ or one of our later works if combining it with them.
 
 ************************************************************************************************************************
 
-This version uses object, that retain the "transforms" (including save/load) need to compute the actual w-scores.
+Changelog
+
+Version 1.2      This version also exports the computed confidence intervals via the python interface
+
+
+Version 1.1
+Updated license
+This version uses object, that saves the "transforms" (including save/load) need to compute the actual w-scores in binary save form
+
 It includes functions  for Prediction, CDF,  Inverse, FitHigh (larger is better), FitLow (smaller is better) and FitSVM.
 
+
+
+
+***************************************************************************************************************
 This needs CMake (version > 2.8)
 
 Quick build instructions for Windows:
@@ -76,7 +88,7 @@ There are several ways to install LibMR for Python:
    allows you to install LibMR as a standard user without needing
    sudo.
 
-      $ virtualenv venv && source venv/bin/activate
+      $ 
       $ pip install -r python/requirements.txt
       $ pip install .
 

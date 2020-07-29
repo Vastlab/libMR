@@ -128,6 +128,18 @@ public:
         void set_scale_param(double scale);
         void set_shape_param(double shape);
 
+        
+        // 95% confidence intervals for scale and shape paramaeters  with lower and upper bound on parm (since boulds are not symmetric) 
+        double get_scale_confidence_lb();
+        double get_scale_confidence_ub();
+        double get_shape_confidence_lb();
+        double get_shape_confidence_ub();
+        void set_scale_confidence_lb(double val);
+        void set_scale_confidence_ub(double val);
+        void set_shape_confidence_lb(double val);
+        void set_shape_confidence_ub(double val);
+
+
 
         bool verbose;  //!<  do we print internal/debugging stuff.  Default is false. (you probably don't need this, but just in case)
         std::string to_string(); //!< Convert this object to a C++ string

@@ -534,6 +534,15 @@ int MetaRecognition::set_sign(int nsign){return sign=nsign;}
 
 double MetaRecognition::get_scale_param(){return parmhat[0];}
 double MetaRecognition::get_shape_param(){return parmhat[1];}
+double MetaRecognition::get_scale_confidence_lb(){return parmci[1];}
+double MetaRecognition::get_scale_confidence_ub(){return parmci[0];}
+double MetaRecognition::get_shape_confidence_lb(){return parmci[3];}
+double MetaRecognition::get_shape_confidence_ub(){return parmci[2];}
+void MetaRecognition::set_scale_confidence_lb(double val){ parmci[1]=val;}
+void MetaRecognition::set_scale_confidence_ub(double val){ parmci[0]=val;}
+void MetaRecognition::set_shape_confidence_lb(double val){ parmci[3]=val;}
+void MetaRecognition::set_shape_confidence_ub(double val){ parmci[2]=val;}
+
 void MetaRecognition::set_scale_param(double scale){parmhat[0] = scale;}
 void MetaRecognition::set_shape_param(double shape){parmhat[1] = shape;}
 

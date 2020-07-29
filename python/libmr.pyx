@@ -84,6 +84,14 @@ cdef extern from "MetaRecognition.h":
         double get_shape_param()
         void set_scale_param(double scale)
         void set_shape_param(double shape)
+        double get_scale_confidence_lb()
+        double get_scale_confidence_ub()
+        double get_shape_confidence_lb()
+        double get_shape_confidence_ub()
+        void set_scale_confidence_lb(double val)
+        void set_scale_confidence_ub(double val)
+        void set_shape_confidence_lb(double val)
+        void set_shape_confidence_ub(double val)
         bool set_valid()
         bool set_invalid()
         unsigned binary_size()
@@ -143,6 +151,16 @@ cdef class MR:
                 self.thisptr.get_sign(),
                 self.thisptr.get_translate_amount(),
                 self.thisptr.get_small_score())
+
+
+    def get_confidence(self):
+        """scale_confidence_lb,scale_confidence_ub,shape_confidence_lb,shape_ub"""
+        return (self.thisptr.get_scale_confidence_lb(),
+                self.thisptr.get_scale_confidence_ub(),
+                self.thisptr.get_shape_confidence_lb(),         
+                self.thisptr.get_shape_confidence_ub()
+                )
+
 
     def set_params(self,double scale, double shape, int sign, int translate_amount, double small_score):
         self.thisptr.set_scale_param(scale)
