@@ -3,6 +3,8 @@ Synopsis
 
 libMR provides core MetaRecognition and  Weibull fitting functionality.
 It is used to calculate w-scores used for multi-modal fusion, renormalize SVM data and in general support open-set algorithms with outlier detection
+For those looking for the GPU-based implmentation in pytorch look here https://github.com/Vastlab/vast/tree/main/vast/DistributionModels
+
 
 
 Motivation
